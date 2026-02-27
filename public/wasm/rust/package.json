@@ -1,0 +1,15 @@
+{
+  "name": "orbital-wasm",
+  "type": "module",
+  "version": "0.1.0",
+  "files": [
+    "orbital_wasm_bg.wasm",
+    "orbital_wasm.js",
+    "orbital_wasm.d.ts"
+  ],
+  "main": "orbital_wasm.js",
+  "types": "orbital_wasm.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}
