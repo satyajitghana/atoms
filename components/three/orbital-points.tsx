@@ -20,52 +20,21 @@ export function OrbitalPoints({
   rotateSpeed = 0.1,
 }: OrbitalPointsProps) {
   const pointsRef = useRef<THREE.Points>(null);
-  const geometryRef = useRef<THREE.BufferGeometry>(null);
 
-  // Create the geometry with buffer attributes imperatively
   const geometry = useMemo(() => {
     const geo = new THREE.BufferGeometry();
-    geo.setAttribute(
-      "position",
-      new THREE.BufferAttribute(positions, 3)
-    );
-    geo.setAttribute(
-      "particleColor",
-      new THREE.BufferAttribute(colors, 3)
-    );
+    geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+    geo.setAttribute("particleColor", new THREE.BufferAttribute(colors, 3));
+    geo.computeBoundingSphere();
     return geo;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [positions, colors]);
 
-  // Update geometry when data changes
+  // Dispose old geometry when it changes
   useEffect(() => {
-    if (!geometry) return;
-
-    const posAttr = geometry.getAttribute("position") as THREE.BufferAttribute;
-    const colAttr = geometry.getAttribute("particleColor") as THREE.BufferAttribute;
-
-    if (posAttr.array.length === positions.length) {
-      (posAttr.array as Float32Array).set(positions);
-      posAttr.needsUpdate = true;
-    } else {
-      geometry.setAttribute(
-        "position",
-        new THREE.BufferAttribute(positions, 3)
-      );
-    }
-
-    if (colAttr.array.length === colors.length) {
-      (colAttr.array as Float32Array).set(colors);
-      colAttr.needsUpdate = true;
-    } else {
-      geometry.setAttribute(
-        "particleColor",
-        new THREE.BufferAttribute(colors, 3)
-      );
-    }
-
-    geometry.setDrawRange(0, positions.length / 3);
-  }, [geometry, positions, colors]);
+    return () => {
+      geometry.dispose();
+    };
+  }, [geometry]);
 
   const material = useMemo(
     () =>
@@ -115,13 +84,12 @@ export function OrbitalPoints({
     }
   });
 
-  // Cleanup on unmount
+  // Cleanup material on unmount
   useEffect(() => {
     return () => {
-      geometry.dispose();
       material.dispose();
     };
-  }, [geometry, material]);
+  }, [material]);
 
   return (
     <points

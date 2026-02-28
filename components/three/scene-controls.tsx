@@ -11,6 +11,7 @@ export function SceneControls() {
       zoomSpeed={1.0}
       minDistance={5}
       maxDistance={500}
+      enablePan={false}
     />
   );
 }

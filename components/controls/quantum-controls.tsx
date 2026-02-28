@@ -1,13 +1,71 @@
 "use client";
 
-import { Slider } from "@/components/ui/slider";
-import { Badge } from "@/components/ui/badge";
 import { useVisualizerStore } from "@/lib/stores/visualizer-store";
+import { cn } from "@/lib/utils";
 
 const SUBSHELL_NAMES = ["s", "p", "d", "f", "g", "h", "i"];
 
+function SegmentedGroup({
+  label,
+  sublabel,
+  values,
+  selected,
+  onSelect,
+  renderLabel,
+  disabledValues,
+}: {
+  label: string;
+  sublabel: string;
+  values: number[];
+  selected: number;
+  onSelect: (v: number) => void;
+  renderLabel?: (v: number) => string;
+  disabledValues?: Set<number>;
+}) {
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-center justify-between">
+        <label className="text-xs text-muted-foreground">
+          {label} <span className="opacity-50">({sublabel})</span>
+        </label>
+      </div>
+      <div className="flex gap-1 flex-wrap">
+        {values.map((v) => {
+          const disabled = disabledValues?.has(v) ?? false;
+          const active = v === selected;
+          return (
+            <button
+              key={v}
+              disabled={disabled}
+              onClick={() => onSelect(v)}
+              className={cn(
+                "h-7 min-w-[2rem] px-2 rounded-md text-[11px] font-mono font-medium transition-all",
+                "border border-border/50",
+                active
+                  ? "bg-primary text-primary-foreground border-primary shadow-sm shadow-primary/20"
+                  : disabled
+                    ? "opacity-30 cursor-not-allowed bg-muted/20 text-muted-foreground"
+                    : "bg-muted/30 text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer"
+              )}
+            >
+              {renderLabel ? renderLabel(v) : v}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export function QuantumControls() {
   const { n, l, m, setN, setL, setM } = useVisualizerStore();
+
+  const lValues = Array.from({ length: Math.min(n, 7) }, (_, i) => i);
+  const lDisabled = new Set(lValues.filter((v) => v >= n));
+
+  const mValues = Array.from({ length: 2 * l + 1 }, (_, i) => i - l);
+
+  const orbitalName = `${n}${SUBSHELL_NAMES[l] || "?"}${l > 0 ? `, m=${m >= 0 ? "+" : ""}${m}` : ""}`;
 
   return (
     <div className="space-y-3">
@@ -15,67 +73,39 @@ export function QuantumControls() {
         <h3 className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
           Quantum Numbers
         </h3>
-        <Badge variant="secondary" className="font-mono text-[10px] px-1.5 py-0">
-          {n}{SUBSHELL_NAMES[l] || "?"}{l > 0 ? ` m=${m >= 0 ? "+" : ""}${m}` : ""}
-        </Badge>
+        <span className="text-sm font-semibold font-mono text-primary">
+          {orbitalName}
+        </span>
       </div>
 
-      <div className="space-y-2.5">
-        <div className="group">
-          <div className="flex items-center justify-between mb-1">
-            <label className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">
-              n <span className="opacity-50">(principal)</span>
-            </label>
-            <span className="text-xs font-mono tabular-nums text-foreground bg-muted px-1.5 rounded">
-              {n}
-            </span>
-          </div>
-          <Slider
-            value={[n]}
-            onValueChange={([v]) => setN(v)}
-            min={1}
-            max={7}
-            step={1}
-          />
-        </div>
+      <SegmentedGroup
+        label="n"
+        sublabel="principal"
+        values={[1, 2, 3, 4, 5, 6, 7]}
+        selected={n}
+        onSelect={setN}
+      />
 
-        <div className="group">
-          <div className="flex items-center justify-between mb-1">
-            <label className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">
-              l <span className="opacity-50">(angular)</span>
-            </label>
-            <span className="text-xs font-mono tabular-nums text-foreground bg-muted px-1.5 rounded">
-              {l} <span className="text-muted-foreground">{SUBSHELL_NAMES[l]}</span>
-            </span>
-          </div>
-          <Slider
-            value={[l]}
-            onValueChange={([v]) => setL(v)}
-            min={0}
-            max={Math.max(n - 1, 0)}
-            step={1}
-          />
-        </div>
+      <SegmentedGroup
+        label="ℓ"
+        sublabel="angular"
+        values={lValues}
+        selected={l}
+        onSelect={setL}
+        disabledValues={lDisabled}
+        renderLabel={(v) => `${SUBSHELL_NAMES[v]}`}
+      />
 
-        <div className="group">
-          <div className="flex items-center justify-between mb-1">
-            <label className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">
-              m <span className="opacity-50">(magnetic)</span>
-            </label>
-            <span className="text-xs font-mono tabular-nums text-foreground bg-muted px-1.5 rounded">
-              {m >= 0 ? "+" : ""}{m}
-            </span>
-          </div>
-          <Slider
-            value={[m]}
-            onValueChange={([v]) => setM(v)}
-            min={-l}
-            max={l}
-            step={1}
-            disabled={l === 0}
-          />
-        </div>
-      </div>
+      {l > 0 && (
+        <SegmentedGroup
+          label="m"
+          sublabel="magnetic"
+          values={mValues}
+          selected={m}
+          onSelect={setM}
+          renderLabel={(v) => (v >= 0 ? `+${v}` : `${v}`)}
+        />
+      )}
     </div>
   );
 }

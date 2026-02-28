@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { PeriodicTable } from "@/components/periodic-table/periodic-table";
 import { ParticleControls } from "@/components/controls/particle-controls";
+import { AufbauDiagram } from "@/components/electron-config/aufbau-diagram";
 import {
   parseElectronConfig,
   getSubshellName,
@@ -55,6 +56,13 @@ export default function ElementsPage() {
     setSelectedElement(el);
   };
 
+  const handleAufbauClick = (n: number, l: number, m: number) => {
+    const idx = orbitals.findIndex(
+      (o) => o.n === n && o.l === l && o.m === m
+    );
+    if (idx >= 0) setSelectedOrbitalIdx(idx);
+  };
+
   return (
     <div className="h-[calc(100vh-48px)] flex flex-col overflow-hidden">
       {/* Header */}
@@ -89,13 +97,23 @@ export default function ElementsPage() {
 
       {/* Desktop: side by side | Mobile: stacked */}
       <div className="flex-1 flex flex-col lg:flex-row min-h-0">
-        {/* Periodic Table */}
+        {/* Periodic Table + Aufbau Diagram */}
         <div className={`${selectedElement ? "lg:w-[52%]" : "w-full"} overflow-auto p-3 sm:p-4 pt-1 transition-all duration-300 ${selectedElement ? "max-h-[45vh] lg:max-h-full" : ""}`}>
           <PeriodicTable
             selectedElement={selectedElement?.number}
             onElementSelect={handleElementSelect}
             compact={!!selectedElement}
           />
+
+          {selectedElement && (
+            <div className="mt-4 p-3 rounded-lg border border-border/30 bg-card/30">
+              <AufbauDiagram
+                electronConfiguration={selectedElement.electronConfiguration}
+                activeOrbital={activeOrbital}
+                onOrbitalClick={handleAufbauClick}
+              />
+            </div>
+          )}
         </div>
 
         {/* Orbital Visualization */}
