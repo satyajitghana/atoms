@@ -32,21 +32,21 @@ const orbitalShapes = [
 export default function AboutPage() {
   return (
     <div className="h-[calc(100vh-48px)] overflow-y-auto">
-      <div className="max-w-3xl mx-auto p-6 space-y-8">
+      <div className="max-w-3xl mx-auto p-4 sm:p-6 space-y-6 sm:space-y-8">
         <div>
-          <h1 className="text-xl font-semibold">About Quantum Orbitals</h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <h1 className="text-lg sm:text-xl font-semibold">About Quantum Orbitals</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1">
             Understanding the physics behind electron orbital visualization
           </p>
         </div>
 
         <Card>
-          <CardHeader>
+          <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-2">
             <CardTitle className="text-sm">
               What Are Quantum Orbitals?
             </CardTitle>
           </CardHeader>
-          <CardContent className="text-sm text-muted-foreground space-y-3 leading-relaxed">
+          <CardContent className="p-4 sm:p-6 pt-2 text-xs sm:text-sm text-muted-foreground space-y-3 leading-relaxed">
             <p>
               An atomic orbital is a mathematical function describing the
               wave-like behavior of an electron in an atom. It does not describe
@@ -60,32 +60,32 @@ export default function AboutPage() {
           </CardContent>
         </Card>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <Card>
-            <CardContent className="p-4">
+            <CardContent className="p-3 sm:p-4">
               <Badge className="mb-2 font-mono">n</Badge>
               <h3 className="text-sm font-semibold">Principal</h3>
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-[11px] sm:text-xs text-muted-foreground mt-1">
                 Determines energy level and size. n = 1, 2, 3, ... Higher n
                 means larger orbital and higher energy.
               </p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-4">
+            <CardContent className="p-3 sm:p-4">
               <Badge className="mb-2 font-mono">l</Badge>
               <h3 className="text-sm font-semibold">Angular Momentum</h3>
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-[11px] sm:text-xs text-muted-foreground mt-1">
                 Determines orbital shape. l = 0 (s), 1 (p), 2 (d), 3 (f).
                 Range: 0 to n-1.
               </p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-4">
+            <CardContent className="p-3 sm:p-4">
               <Badge className="mb-2 font-mono">m</Badge>
               <h3 className="text-sm font-semibold">Magnetic</h3>
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-[11px] sm:text-xs text-muted-foreground mt-1">
                 Determines orientation in space. Range: -l to +l. Gives 2l+1
                 possible orientations.
               </p>
@@ -100,13 +100,13 @@ export default function AboutPage() {
           <div className="space-y-3">
             {orbitalShapes.map((shape) => (
               <Card key={shape.name}>
-                <CardContent className="p-4 flex items-start gap-4">
+                <CardContent className="p-3 sm:p-4 flex items-start gap-3 sm:gap-4">
                   <Badge variant="secondary" className="shrink-0 font-mono">
                     l={shape.l}
                   </Badge>
                   <div>
                     <h3 className="text-sm font-semibold">{shape.name}</h3>
-                    <p className="text-xs text-muted-foreground mt-0.5">
+                    <p className="text-[11px] sm:text-xs text-muted-foreground mt-0.5">
                       {shape.description}
                     </p>
                     <p className="text-[10px] text-muted-foreground mt-1 font-mono">
@@ -122,14 +122,14 @@ export default function AboutPage() {
         <Separator />
 
         <Card>
-          <CardHeader>
+          <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-2">
             <CardTitle className="text-sm">The Wave Function</CardTitle>
           </CardHeader>
-          <CardContent className="text-sm text-muted-foreground space-y-3 leading-relaxed">
+          <CardContent className="p-4 sm:p-6 pt-2 text-xs sm:text-sm text-muted-foreground space-y-3 leading-relaxed">
             <p>
               The hydrogen atom wave function is:
             </p>
-            <div className="bg-muted p-3 rounded-md font-mono text-xs">
+            <div className="bg-muted p-3 rounded-md font-mono text-[11px] sm:text-xs overflow-x-auto">
               {"\u03C8(r,\u03B8,\u03C6) = R\u2099\u2097(r) \u00D7 Y\u2097\u1D50(\u03B8,\u03C6)"}
             </div>
             <p>
@@ -148,10 +148,10 @@ export default function AboutPage() {
         </Card>
 
         <Card>
-          <CardHeader>
+          <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-2">
             <CardTitle className="text-sm">How This Visualizer Works</CardTitle>
           </CardHeader>
-          <CardContent className="text-sm text-muted-foreground space-y-3 leading-relaxed">
+          <CardContent className="p-4 sm:p-6 pt-2 text-xs sm:text-sm text-muted-foreground space-y-3 leading-relaxed">
             <ol className="list-decimal list-inside space-y-2">
               <li>
                 <strong className="text-foreground">CDF Sampling</strong> -
@@ -180,11 +180,11 @@ export default function AboutPage() {
         </Card>
 
         <Card>
-          <CardHeader>
+          <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-2">
             <CardTitle className="text-sm">Technology Stack</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap gap-2">
+          <CardContent className="p-4 sm:p-6 pt-2">
+            <div className="flex flex-wrap gap-1.5 sm:gap-2">
               {[
                 "Next.js 16",
                 "React 19",
@@ -194,8 +194,9 @@ export default function AboutPage() {
                 "C++23 + Emscripten",
                 "shadcn/ui",
                 "Tailwind CSS v4",
+                "Zustand",
               ].map((tech) => (
-                <Badge key={tech} variant="secondary" className="text-xs">
+                <Badge key={tech} variant="secondary" className="text-[10px] sm:text-xs">
                   {tech}
                 </Badge>
               ))}

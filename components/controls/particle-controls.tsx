@@ -41,13 +41,17 @@ export function ParticleControls({
   onPointSizeChange,
 }: ParticleControlsProps) {
   return (
-    <div className="space-y-3">
-      <h3 className="text-sm font-medium text-foreground">Rendering</h3>
+    <div className="space-y-2.5">
+      <h3 className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+        Rendering
+      </h3>
 
-      <div>
-        <div className="flex items-center justify-between mb-1.5">
-          <label className="text-xs text-muted-foreground">Particles</label>
-          <span className="text-xs font-mono text-foreground">
+      <div className="group">
+        <div className="flex items-center justify-between mb-1">
+          <label className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">
+            Particles
+          </label>
+          <span className="text-xs font-mono tabular-nums text-foreground bg-muted px-1.5 rounded">
             {formatCount(count)}
           </span>
         </div>
@@ -60,10 +64,12 @@ export function ParticleControls({
         />
       </div>
 
-      <div>
-        <div className="flex items-center justify-between mb-1.5">
-          <label className="text-xs text-muted-foreground">Point Size</label>
-          <span className="text-xs font-mono text-foreground">
+      <div className="group">
+        <div className="flex items-center justify-between mb-1">
+          <label className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">
+            Point Size
+          </label>
+          <span className="text-xs font-mono tabular-nums text-foreground bg-muted px-1.5 rounded">
             {pointSize.toFixed(2)}
           </span>
         </div>
