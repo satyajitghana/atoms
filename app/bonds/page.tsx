@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import dynamic from "next/dynamic";
 import { useOrbitalEngine, useOrbitalData } from "@/lib/hooks/use-orbital-engine";
+import { useVolumeData } from "@/lib/hooks/use-volume-data";
 import { Loader2, Sparkles } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
@@ -13,6 +14,7 @@ const BondViewer = dynamic(
 );
 
 type BondType = "sigma-ss" | "sigma-pp" | "pi-pp";
+type RenderMode = "points" | "volume";
 
 const BOND_TYPES: { key: BondType; label: string; description: string }[] = [
   { key: "sigma-ss", label: "σ (s-s)", description: "Head-on overlap of two s orbitals" },
@@ -47,10 +49,13 @@ export default function BondsPage() {
   const [bondType, setBondType] = useState<BondType>("sigma-ss");
   const [bondDistance, setBondDistance] = useState(8);
   const [particleCount] = useState(60000);
+  const [renderMode, setRenderMode] = useState<RenderMode>("points");
+  const [volumeResolution, setVolumeResolution] = useState(128);
+  const [volumeOpacity, setVolumeOpacity] = useState(5.0);
 
   const config = getBondConfig(bondType);
 
-  const { engine } = useOrbitalEngine("js");
+  const { engine } = useOrbitalEngine("rust");
   const { data: data1 } = useOrbitalData(
     engine,
     config.orbital1.n,
@@ -64,6 +69,20 @@ export default function BondsPage() {
     config.orbital2.l,
     config.orbital2.m,
     particleCount
+  );
+
+  // Volume data for both orbitals
+  const { data: volumeData1 } = useVolumeData(
+    config.orbital1.n,
+    config.orbital1.l,
+    config.orbital1.m,
+    renderMode === "volume" ? volumeResolution : 0
+  );
+  const { data: volumeData2 } = useVolumeData(
+    config.orbital2.n,
+    config.orbital2.l,
+    config.orbital2.m,
+    renderMode === "volume" ? volumeResolution : 0
   );
 
   const orbitals = useMemo(() => {
@@ -102,6 +121,11 @@ export default function BondsPage() {
             orbitals={orbitals}
             pointSize={0.06}
             autoRotate
+            renderMode={renderMode}
+            volumeData={renderMode === "volume" ? [volumeData1, volumeData2] : undefined}
+            volumeOpacity={volumeOpacity}
+            bondDistance={bondDistance}
+            bondType={bondType}
           />
         ) : (
           <div className="flex items-center justify-center h-full bg-[#050508]">
@@ -152,6 +176,74 @@ export default function BondsPage() {
             </div>
           </div>
 
+          {/* Render mode toggle */}
+          <div className="space-y-1.5">
+            <h3 className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+              Render Mode
+            </h3>
+            <div className="flex gap-1">
+              {(["points", "volume"] as const).map((mode) => (
+                <button
+                  key={mode}
+                  onClick={() => setRenderMode(mode)}
+                  className={cn(
+                    "flex-1 h-7 rounded-md text-[11px] font-medium transition-all border border-border/50",
+                    renderMode === mode
+                      ? "bg-primary text-primary-foreground border-primary shadow-sm shadow-primary/20"
+                      : "bg-muted/30 text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer"
+                  )}
+                >
+                  {mode === "points" ? "Points" : "Volume"}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Volume controls */}
+          {renderMode === "volume" && (
+            <div className="space-y-2">
+              <div className="group">
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-xs text-muted-foreground">Density</label>
+                  <span className="text-xs font-mono tabular-nums text-foreground bg-muted px-1.5 rounded">
+                    {volumeOpacity.toFixed(1)}
+                  </span>
+                </div>
+                <Slider
+                  value={[volumeOpacity]}
+                  onValueChange={([v]) => setVolumeOpacity(v)}
+                  min={0.5}
+                  max={20}
+                  step={0.5}
+                />
+              </div>
+              <div className="group">
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-xs text-muted-foreground">Resolution</label>
+                  <span className="text-xs font-mono tabular-nums text-foreground bg-muted px-1.5 rounded">
+                    {volumeResolution}³
+                  </span>
+                </div>
+                <div className="flex gap-1">
+                  {[32, 64, 128, 256].map((res) => (
+                    <button
+                      key={res}
+                      onClick={() => setVolumeResolution(res)}
+                      className={cn(
+                        "flex-1 h-6 rounded text-[10px] font-mono transition-all border border-border/50",
+                        volumeResolution === res
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "bg-muted/30 text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer"
+                      )}
+                    >
+                      {res}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Bond distance slider */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
@@ -174,7 +266,7 @@ export default function BondsPage() {
       {/* Bottom info */}
       <div className="absolute bottom-4 right-4 bg-card/60 backdrop-blur-xl rounded-lg border border-border/30 px-3 py-1.5">
         <p className="text-[10px] font-mono text-muted-foreground">
-          {activeBond.label} bond | distance: {bondDistance.toFixed(1)}
+          {activeBond.label} bond | distance: {bondDistance.toFixed(1)} | {renderMode}
         </p>
       </div>
     </div>

@@ -14,6 +14,7 @@ interface VisualizerState {
   pointSize: number;
   renderMode: RenderMode;
   volumeOpacity: number;
+  volumeResolution: number;
   // Effects
   edlEnabled: boolean;
   // Engine
@@ -30,6 +31,7 @@ interface VisualizerState {
   setPointSize: (size: number) => void;
   setRenderMode: (mode: RenderMode) => void;
   setVolumeOpacity: (opacity: number) => void;
+  setVolumeResolution: (resolution: number) => void;
   toggleEdl: () => void;
   setEngineType: (type: EngineType) => void;
   toggleAutoRotate: () => void;
@@ -43,8 +45,9 @@ export const useVisualizerStore = create<VisualizerState>((set, get) => ({
   pointSize: 0.08,
   renderMode: "points",
   volumeOpacity: 5.0,
+  volumeResolution: 128,
   edlEnabled: false,
-  engineType: "js",
+  engineType: "rust",
   autoRotate: true,
 
   setN: (newN) => {
@@ -70,6 +73,7 @@ export const useVisualizerStore = create<VisualizerState>((set, get) => ({
   setPointSize: (pointSize) => set({ pointSize }),
   setRenderMode: (renderMode) => set({ renderMode }),
   setVolumeOpacity: (volumeOpacity) => set({ volumeOpacity }),
+  setVolumeResolution: (volumeResolution) => set({ volumeResolution }),
   toggleEdl: () => set((s) => ({ edlEnabled: !s.edlEnabled })),
   setEngineType: (engineType) => set({ engineType }),
   toggleAutoRotate: () => set((s) => ({ autoRotate: !s.autoRotate })),

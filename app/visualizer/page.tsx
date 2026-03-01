@@ -70,6 +70,7 @@ export default function VisualizerPage() {
     autoRotate, toggleAutoRotate,
     renderMode, setRenderMode,
     volumeOpacity, setVolumeOpacity,
+    volumeResolution, setVolumeResolution,
     edlEnabled, toggleEdl,
   } = useVisualizerStore();
 
@@ -79,7 +80,7 @@ export default function VisualizerPage() {
   );
 
   const { data: volumeData, generating: volumeGenerating } = useVolumeData(
-    n, l, m, renderMode === "volume" ? 64 : 0
+    n, l, m, renderMode === "volume" ? volumeResolution : 0
   );
 
   const animated = useAnimatedOrbital(data, 600);
@@ -199,6 +200,35 @@ export default function VisualizerPage() {
                   max={20}
                   step={0.5}
                 />
+              </div>
+              <div className="group">
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">
+                    Resolution
+                  </label>
+                  <span className="text-xs font-mono tabular-nums text-foreground bg-muted px-1.5 rounded">
+                    {volumeResolution}³
+                  </span>
+                </div>
+                <div className="flex gap-1">
+                  {[32, 64, 128, 256].map((res) => (
+                    <button
+                      key={res}
+                      onClick={() => setVolumeResolution(res)}
+                      className={cn(
+                        "flex-1 h-6 rounded text-[10px] font-mono transition-all border border-border/50",
+                        volumeResolution === res
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "bg-muted/30 text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer"
+                      )}
+                    >
+                      {res}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[8px] text-muted-foreground/60 mt-0.5">
+                  {volumeResolution <= 64 ? "Fast" : volumeResolution <= 128 ? "Balanced" : "High quality, slower"}
+                </p>
               </div>
             </div>
           )}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useEffect } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { OrbitalScene } from "./orbital-scene";
@@ -254,6 +254,31 @@ function getValenceElectrons(symbol: string): number {
   return valenceMap[symbol] ?? 4;
 }
 
+// Auto-fit camera to molecule extent
+function MoleculeCameraFitter({ geometry }: { geometry: MoleculeGeometry }) {
+  const { camera } = useThree();
+
+  useEffect(() => {
+    if (geometry.atoms.length === 0) return;
+    let maxR2 = 0;
+    for (const atom of geometry.atoms) {
+      const [x, y, z] = atom.position;
+      const r2 = x * x + y * y + z * z;
+      if (r2 > maxR2) maxR2 = r2;
+    }
+    // Add radius of the atom + electron cloud
+    const moleculeRadius = Math.sqrt(maxR2) + 1.5;
+    const fov = (camera as THREE.PerspectiveCamera).fov;
+    const fovRad = (fov * Math.PI) / 180;
+    const dist = (moleculeRadius / Math.sin(fovRad / 2)) * 1.4;
+    camera.position.set(0, 0, Math.max(dist, 5));
+    camera.lookAt(0, 0, 0);
+    camera.updateProjectionMatrix();
+  }, [geometry, camera]);
+
+  return null;
+}
+
 function CompoundScene({
   geometry,
   bondType,
@@ -275,6 +300,7 @@ function CompoundScene({
       <directionalLight position={[5, 5, 5]} intensity={0.8} />
       <directionalLight position={[-3, -3, 2]} intensity={0.3} />
       <SceneControls />
+      <MoleculeCameraFitter geometry={geometry} />
 
       <group ref={groupRef}>
         {/* Bonds */}

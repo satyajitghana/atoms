@@ -116,7 +116,8 @@ function SortedGridView({
   );
 }
 
-// Spiral/circular view
+// Period-based spiral: concentric rings for each period, elements spaced evenly
+// Hydrogen at center top, with each period forming a ring outward
 function SpiralView({
   selectedElement,
   onElementSelect,
@@ -124,74 +125,158 @@ function SpiralView({
   selectedElement?: number;
   onElementSelect: (el: Element) => void;
 }) {
-  const positions = useMemo(() => {
-    // Place elements in a spiral from center outward
-    // Hydrogen at center, then expand outward by period
-    const results: { el: Element; x: number; y: number }[] = [];
-    const centerX = 300;
-    const centerY = 300;
+  // Period ranges: which atomic numbers are in each period
+  const PERIODS: { period: number; start: number; end: number }[] = [
+    { period: 1, start: 1, end: 2 },
+    { period: 2, start: 3, end: 10 },
+    { period: 3, start: 11, end: 18 },
+    { period: 4, start: 19, end: 36 },
+    { period: 5, start: 37, end: 54 },
+    { period: 6, start: 55, end: 86 },
+    { period: 7, start: 87, end: 118 },
+  ];
 
-    ELEMENTS.forEach((el, i) => {
-      // Archimedean spiral
-      const angle = i * 0.5;
-      const r = 8 + i * 2.2;
-      const x = centerX + r * Math.cos(angle);
-      const y = centerY + r * Math.sin(angle);
-      results.push({ el, x, y });
-    });
+  const positions = useMemo(() => {
+    const results: { el: Element; x: number; y: number; ring: number }[] = [];
+    const cx = 400;
+    const cy = 400;
+    const baseRadius = 30;
+    const ringSpacing = 48;
+
+    for (const { period, start, end } of PERIODS) {
+      const ring = period;
+      const r = baseRadius + (ring - 1) * ringSpacing;
+      const count = end - start + 1;
+
+      for (let i = 0; i < count; i++) {
+        const atomicNum = start + i;
+        const el = ELEMENTS.find((e) => e.number === atomicNum);
+        if (!el) continue;
+
+        // Start from top (–π/2), distribute evenly around the circle
+        // Leave a small gap at the top for visual separation
+        const gapFraction = 0.06; // 6% gap
+        const arcSpan = 2 * Math.PI * (1 - gapFraction);
+        const startAngle = -Math.PI / 2 + (2 * Math.PI * gapFraction) / 2;
+        const angle = startAngle + (arcSpan * i) / Math.max(count - 1, 1);
+
+        const x = cx + r * Math.cos(angle);
+        const y = cy + r * Math.sin(angle);
+        results.push({ el, x, y, ring });
+      }
+    }
 
     return results;
   }, []);
 
+  const svgSize = 800;
+
   return (
     <div className="w-full overflow-auto">
-      <svg viewBox="0 0 600 600" className="w-full max-w-[500px] mx-auto h-auto">
-        {/* Background */}
-        <rect width="600" height="600" fill="transparent" />
+      <svg viewBox={`0 0 ${svgSize} ${svgSize}`} className="w-full max-w-[700px] mx-auto h-auto">
+        {/* Period ring guides */}
+        {PERIODS.map(({ period }) => {
+          const r = 30 + (period - 1) * 48;
+          return (
+            <circle
+              key={`ring-${period}`}
+              cx={400}
+              cy={400}
+              r={r}
+              fill="none"
+              stroke="#ffffff08"
+              strokeWidth={0.5}
+              strokeDasharray="3 6"
+            />
+          );
+        })}
 
+        {/* Period labels */}
+        {PERIODS.map(({ period }) => {
+          const r = 30 + (period - 1) * 48;
+          return (
+            <text
+              key={`label-${period}`}
+              x={400}
+              y={400 - r - 6}
+              textAnchor="middle"
+              fill="#ffffff20"
+              fontSize="8"
+              fontFamily="monospace"
+            >
+              Period {period}
+            </text>
+          );
+        })}
+
+        {/* Element dots */}
         {positions.map(({ el, x, y }) => {
           const isSelected = selectedElement === el.number;
           const color = CATEGORY_COLORS[el.category];
+          const r = isSelected ? 14 : 10;
 
           return (
             <g
               key={el.number}
               onClick={() => onElementSelect(el)}
               className="cursor-pointer"
+              style={{ transition: "transform 0.2s" }}
             >
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <g>
-                    <circle
-                      cx={x}
-                      cy={y}
-                      r={isSelected ? 10 : 7}
-                      fill={isSelected ? color : `${color}40`}
-                      stroke={color}
-                      strokeWidth={isSelected ? 2 : 0.5}
-                    />
-                    <text
-                      x={x}
-                      y={y + 0.5}
-                      textAnchor="middle"
-                      dominantBaseline="middle"
-                      fill={isSelected ? "#000" : color}
-                      fontSize={isSelected ? "7" : "5"}
-                      fontWeight="bold"
-                      fontFamily="monospace"
-                    >
-                      {el.symbol}
-                    </text>
-                  </g>
-                </TooltipTrigger>
-                <TooltipContent side="top" className="text-xs">
-                  <p className="font-semibold">{el.name}</p>
-                  <p className="text-muted-foreground text-[10px]">{el.mass.toFixed(3)} u</p>
-                </TooltipContent>
-              </Tooltip>
+              {/* Glow for selected */}
+              {isSelected && (
+                <circle cx={x} cy={y} r={22} fill={`${color}20`} />
+              )}
+              <circle
+                cx={x}
+                cy={y}
+                r={r}
+                fill={isSelected ? color : `${color}30`}
+                stroke={color}
+                strokeWidth={isSelected ? 2 : 0.8}
+              />
+              <text
+                x={x}
+                y={y - 1}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                fill={isSelected ? "#000" : color}
+                fontSize={isSelected ? "8" : "6.5"}
+                fontWeight="bold"
+                fontFamily="monospace"
+              >
+                {el.symbol}
+              </text>
+              <text
+                x={x}
+                y={y + 6}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                fill={isSelected ? "#00000080" : `${color}60`}
+                fontSize="4"
+                fontFamily="monospace"
+              >
+                {el.number}
+              </text>
             </g>
           );
         })}
+
+        {/* Category legend */}
+        {(() => {
+          const categories = [
+            "alkali-metal", "alkaline-earth", "transition-metal",
+            "post-transition-metal", "metalloid", "nonmetal",
+            "halogen", "noble-gas", "lanthanide", "actinide",
+          ] as const;
+          return categories.map((cat, i) => (
+            <g key={cat} transform={`translate(${20 + (i % 5) * 155}, ${svgSize - 40 + Math.floor(i / 5) * 16})`}>
+              <circle cx={0} cy={0} r={4} fill={CATEGORY_COLORS[cat]} />
+              <text x={8} y={1} fill="#ffffff60" fontSize="7" fontFamily="monospace" dominantBaseline="middle">
+                {cat.replace(/-/g, " ")}
+              </text>
+            </g>
+          ));
+        })()}
       </svg>
     </div>
   );

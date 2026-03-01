@@ -3,8 +3,10 @@
 import { useMemo } from "react";
 import { OrbitalScene } from "./orbital-scene";
 import { OrbitalPoints } from "./orbital-points";
+import { OrbitalVolume } from "./orbital-volume";
 import { PostProcessing } from "./post-processing";
 import { SceneControls } from "./scene-controls";
+import type { VolumeData } from "@/lib/wasm/volume-generator";
 
 interface BondOrbital {
   positions: Float32Array;
@@ -17,6 +19,11 @@ interface BondViewerProps {
   pointSize?: number;
   autoRotate?: boolean;
   bloomIntensity?: number;
+  renderMode?: "points" | "volume";
+  volumeData?: (VolumeData | null)[];
+  volumeOpacity?: number;
+  bondDistance?: number;
+  bondType?: string;
 }
 
 function OffsetPoints({
@@ -51,21 +58,42 @@ export function BondViewer({
   pointSize = 0.06,
   autoRotate = true,
   bloomIntensity = 1.2,
+  renderMode = "points",
+  volumeData,
+  volumeOpacity = 5.0,
 }: BondViewerProps) {
+  const showVolume = renderMode === "volume" && volumeData && volumeData.length >= 2 && volumeData[0] && volumeData[1];
+
   return (
     <OrbitalScene className="w-full h-full">
       <ambientLight intensity={0.1} />
       <SceneControls />
-      {orbitals.map((orb, i) => (
-        <OffsetPoints
-          key={i}
-          positions={orb.positions}
-          colors={orb.colors}
-          offset={orb.offset}
-          pointSize={pointSize}
-          autoRotate={autoRotate}
-        />
-      ))}
+      {renderMode === "points" || !showVolume ? (
+        orbitals.map((orb, i) => (
+          <OffsetPoints
+            key={i}
+            positions={orb.positions}
+            colors={orb.colors}
+            offset={orb.offset}
+            pointSize={pointSize}
+            autoRotate={autoRotate}
+          />
+        ))
+      ) : (
+        <>
+          {volumeData!.map((vd, i) =>
+            vd ? (
+              <group key={i} position={orbitals[i]?.offset ?? [0, 0, 0]}>
+                <OrbitalVolume
+                  volumeData={vd}
+                  opacity={volumeOpacity}
+                  autoRotate={autoRotate}
+                />
+              </group>
+            ) : null
+          )}
+        </>
+      )}
       <PostProcessing bloomIntensity={bloomIntensity} />
     </OrbitalScene>
   );

@@ -49,7 +49,7 @@ export default function ElementsPage() {
 
   const activeOrbital = orbitals[selectedOrbitalIdx] || orbitals[0];
 
-  const { engine } = useOrbitalEngine("js");
+  const { engine } = useOrbitalEngine("rust");
   const { data } = useOrbitalData(
     engine,
     activeOrbital?.n || 1,
