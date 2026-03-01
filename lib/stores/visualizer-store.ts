@@ -2,6 +2,8 @@ import { create } from "zustand";
 import { constrainQuantumNumbers } from "@/lib/chemistry/electron-config";
 import type { EngineType } from "@/lib/wasm/orbital-engine";
 
+export type RenderMode = "points" | "volume";
+
 interface VisualizerState {
   // Quantum numbers
   n: number;
@@ -10,6 +12,11 @@ interface VisualizerState {
   // Rendering
   particleCount: number;
   pointSize: number;
+  renderMode: RenderMode;
+  volumeOpacity: number;
+  volumeResolution: number;
+  // Effects
+  edlEnabled: boolean;
   // Engine
   engineType: EngineType;
   // View
@@ -22,6 +29,10 @@ interface VisualizerState {
   setQuantumNumbers: (n: number, l: number, m: number) => void;
   setParticleCount: (count: number) => void;
   setPointSize: (size: number) => void;
+  setRenderMode: (mode: RenderMode) => void;
+  setVolumeOpacity: (opacity: number) => void;
+  setVolumeResolution: (resolution: number) => void;
+  toggleEdl: () => void;
   setEngineType: (type: EngineType) => void;
   toggleAutoRotate: () => void;
 }
@@ -32,7 +43,11 @@ export const useVisualizerStore = create<VisualizerState>((set, get) => ({
   m: 0,
   particleCount: 100000,
   pointSize: 0.08,
-  engineType: "js",
+  renderMode: "points",
+  volumeOpacity: 5.0,
+  volumeResolution: 128,
+  edlEnabled: false,
+  engineType: "rust",
   autoRotate: true,
 
   setN: (newN) => {
@@ -56,6 +71,10 @@ export const useVisualizerStore = create<VisualizerState>((set, get) => ({
 
   setParticleCount: (particleCount) => set({ particleCount }),
   setPointSize: (pointSize) => set({ pointSize }),
+  setRenderMode: (renderMode) => set({ renderMode }),
+  setVolumeOpacity: (volumeOpacity) => set({ volumeOpacity }),
+  setVolumeResolution: (volumeResolution) => set({ volumeResolution }),
+  toggleEdl: () => set((s) => ({ edlEnabled: !s.edlEnabled })),
   setEngineType: (engineType) => set({ engineType }),
   toggleAutoRotate: () => set((s) => ({ autoRotate: !s.autoRotate })),
 }));

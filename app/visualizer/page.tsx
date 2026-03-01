@@ -5,16 +5,20 @@ import dynamic from "next/dynamic";
 import { QuantumControls } from "@/components/controls/quantum-controls";
 import { ParticleControls } from "@/components/controls/particle-controls";
 import { EngineToggle } from "@/components/controls/engine-toggle";
+import { Slider } from "@/components/ui/slider";
 import { useVisualizerStore } from "@/lib/stores/visualizer-store";
 import {
   useOrbitalEngine,
   useOrbitalData,
 } from "@/lib/hooks/use-orbital-engine";
+import { useVolumeData } from "@/lib/hooks/use-volume-data";
+import { useAnimatedOrbital, interpolateOrbitalData } from "@/lib/hooks/use-animated-orbital";
 import { getOrbitalName } from "@/lib/chemistry/electron-config";
 import { Loader2, RotateCcw, Sparkles, Settings2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 
 const OrbitalViewer = dynamic(
   () =>
@@ -24,6 +28,38 @@ const OrbitalViewer = dynamic(
   { ssr: false }
 );
 
+function RenderModeToggle({
+  value,
+  onChange,
+}: {
+  value: "points" | "volume";
+  onChange: (mode: "points" | "volume") => void;
+}) {
+  return (
+    <div className="space-y-1.5">
+      <h3 className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+        Render Mode
+      </h3>
+      <div className="flex gap-1">
+        {(["points", "volume"] as const).map((mode) => (
+          <button
+            key={mode}
+            onClick={() => onChange(mode)}
+            className={cn(
+              "flex-1 h-7 rounded-md text-[11px] font-medium transition-all border border-border/50",
+              value === mode
+                ? "bg-primary text-primary-foreground border-primary shadow-sm shadow-primary/20"
+                : "bg-muted/30 text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer"
+            )}
+          >
+            {mode === "points" ? "Points" : "Volume"}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function VisualizerPage() {
   const [controlsOpen, setControlsOpen] = useState(false);
   const {
@@ -32,6 +68,10 @@ export default function VisualizerPage() {
     pointSize, setPointSize,
     engineType, setEngineType,
     autoRotate, toggleAutoRotate,
+    renderMode, setRenderMode,
+    volumeOpacity, setVolumeOpacity,
+    volumeResolution, setVolumeResolution,
+    edlEnabled, toggleEdl,
   } = useVisualizerStore();
 
   const { engine, loading: engineLoading } = useOrbitalEngine(engineType);
@@ -39,18 +79,29 @@ export default function VisualizerPage() {
     engine, n, l, m, particleCount
   );
 
-  const isLoading = engineLoading || generating;
+  const { data: volumeData, generating: volumeGenerating } = useVolumeData(
+    n, l, m, renderMode === "volume" ? volumeResolution : 0
+  );
+
+  const animated = useAnimatedOrbital(data, 600);
+  const displayData = animated ? interpolateOrbitalData(animated) : null;
+
+  const isLoading = engineLoading || generating || volumeGenerating;
 
   return (
     <div className="h-[calc(100vh-48px)] relative overflow-hidden">
       {/* 3D Scene fills entire background */}
       <div className="absolute inset-0">
-        {data ? (
+        {displayData ? (
           <OrbitalViewer
-            positions={data.positions}
-            colors={data.colors}
+            positions={displayData.positions}
+            colors={displayData.colors}
             pointSize={pointSize}
             autoRotate={autoRotate}
+            renderMode={renderMode}
+            volumeData={volumeData}
+            volumeOpacity={volumeOpacity}
+            edlEnabled={edlEnabled}
           />
         ) : (
           <div className="flex items-center justify-center h-full bg-[#050508]">
@@ -120,12 +171,67 @@ export default function VisualizerPage() {
         <div className="px-4 py-3 space-y-4">
           <QuantumControls />
           <Separator className="opacity-30" />
-          <ParticleControls
-            count={particleCount}
-            onCountChange={setParticleCount}
-            pointSize={pointSize}
-            onPointSizeChange={setPointSize}
-          />
+          <RenderModeToggle value={renderMode} onChange={setRenderMode} />
+          {renderMode === "points" ? (
+            <ParticleControls
+              count={particleCount}
+              onCountChange={setParticleCount}
+              pointSize={pointSize}
+              onPointSizeChange={setPointSize}
+            />
+          ) : (
+            <div className="space-y-2.5">
+              <h3 className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                Volume
+              </h3>
+              <div className="group">
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">
+                    Density
+                  </label>
+                  <span className="text-xs font-mono tabular-nums text-foreground bg-muted px-1.5 rounded">
+                    {volumeOpacity.toFixed(1)}
+                  </span>
+                </div>
+                <Slider
+                  value={[volumeOpacity]}
+                  onValueChange={([v]) => setVolumeOpacity(v)}
+                  min={0.5}
+                  max={20}
+                  step={0.5}
+                />
+              </div>
+              <div className="group">
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">
+                    Resolution
+                  </label>
+                  <span className="text-xs font-mono tabular-nums text-foreground bg-muted px-1.5 rounded">
+                    {volumeResolution}³
+                  </span>
+                </div>
+                <div className="flex gap-1">
+                  {[32, 64, 128, 256].map((res) => (
+                    <button
+                      key={res}
+                      onClick={() => setVolumeResolution(res)}
+                      className={cn(
+                        "flex-1 h-6 rounded text-[10px] font-mono transition-all border border-border/50",
+                        volumeResolution === res
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "bg-muted/30 text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer"
+                      )}
+                    >
+                      {res}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[8px] text-muted-foreground/60 mt-0.5">
+                  {volumeResolution <= 64 ? "Fast" : volumeResolution <= 128 ? "Balanced" : "High quality, slower"}
+                </p>
+              </div>
+            </div>
+          )}
           <Separator className="opacity-30" />
           <EngineToggle value={engineType} onChange={setEngineType} />
           <div className="flex items-center justify-between">
@@ -136,13 +242,21 @@ export default function VisualizerPage() {
               className="scale-75 origin-right"
             />
           </div>
+          <div className="flex items-center justify-between">
+            <label className="text-xs text-muted-foreground">Eye Dome Lighting</label>
+            <Switch
+              checked={edlEnabled}
+              onCheckedChange={toggleEdl}
+              className="scale-75 origin-right"
+            />
+          </div>
         </div>
 
         {/* Footer */}
         {engine && (
           <div className="px-4 py-2 border-t border-border/30 bg-muted/20">
             <p className="text-[9px] text-muted-foreground font-mono">
-              Engine: {engine.name}
+              Engine: {engine.name} | Mode: {renderMode}
             </p>
           </div>
         )}
@@ -159,7 +273,7 @@ export default function VisualizerPage() {
       {/* Bottom-right orbital label (desktop only) */}
       <div className="hidden md:block absolute bottom-4 right-4 bg-card/60 backdrop-blur-xl rounded-lg border border-border/30 px-3 py-1.5">
         <p className="text-[10px] font-mono text-muted-foreground">
-          {getOrbitalName(n, l, m)} | {(particleCount / 1000).toFixed(0)}K particles
+          {getOrbitalName(n, l, m)} | {renderMode === "points" ? `${(particleCount / 1000).toFixed(0)}K particles` : "volume"}
         </p>
       </div>
     </div>
