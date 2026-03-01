@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import dynamic from "next/dynamic";
 import { ELEMENTS, CATEGORY_COLORS, type Element } from "@/lib/data/elements";
 import { COMPOUNDS, type Compound } from "@/lib/data/compounds";
 import { useLabStore, TOTAL_COMPOUNDS } from "@/lib/stores/lab-store";
 import { EnergyMeter } from "@/components/lab/energy-meter";
+import { ReactionAnimation } from "@/components/lab/reaction-animation";
 import {
   Tooltip,
   TooltipContent,
@@ -25,6 +27,11 @@ import {
   ChevronUp,
   Search,
 } from "lucide-react";
+
+const CompoundViewer = dynamic(
+  () => import("@/components/three/compound-viewer").then((mod) => mod.CompoundViewer),
+  { ssr: false }
+);
 
 // Common elements for quick access
 const QUICK_ELEMENTS = [1, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 19, 20, 26, 29, 30, 35, 47, 56];
@@ -216,6 +223,10 @@ function ResultPanel({
           {result.energy && (
             <EnergyMeter deltaHf={compound.deltaHf} />
           )}
+          <CompoundViewer
+            formula={compound.formula}
+            className="w-full h-[250px] rounded-lg overflow-hidden border border-border/20"
+          />
         </div>
       )}
     </div>
@@ -348,8 +359,28 @@ export default function LabPage() {
     clearResult,
   } = useLabStore();
 
+  const [showAnimation, setShowAnimation] = useState(false);
+  const [animationData, setAnimationData] = useState<{
+    elements: string[];
+    formula: string;
+    name: string;
+    exothermic: boolean;
+    energyValue: number;
+  } | null>(null);
+
   const handleReact = () => {
-    react();
+    const elements = workspace.map((el) => el.symbol);
+    const result = react();
+    if (result.success && result.compound) {
+      setAnimationData({
+        elements,
+        formula: result.compound.formula,
+        name: result.compound.name,
+        exothermic: result.compound.deltaHf <= 0,
+        energyValue: Math.abs(result.compound.deltaHf),
+      });
+      setShowAnimation(true);
+    }
   };
 
   return (
@@ -451,6 +482,10 @@ export default function LabPage() {
               </Badge>
             </div>
             <EnergyMeter deltaHf={selectedCompound.deltaHf} />
+            <CompoundViewer
+              formula={selectedCompound.formula}
+              className="w-full h-[250px] mt-3 rounded-lg overflow-hidden border border-border/20"
+            />
           </div>
         )}
 
@@ -477,6 +512,18 @@ export default function LabPage() {
           />
         </div>
       </div>
+
+      {/* Reaction animation overlay */}
+      {showAnimation && animationData && (
+        <ReactionAnimation
+          elements={animationData.elements}
+          formula={animationData.formula}
+          name={animationData.name}
+          exothermic={animationData.exothermic}
+          energyValue={animationData.energyValue}
+          onComplete={() => setShowAnimation(false)}
+        />
+      )}
     </div>
   );
 }

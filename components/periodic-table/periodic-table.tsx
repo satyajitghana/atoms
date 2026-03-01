@@ -110,22 +110,22 @@ export function PeriodicTable({
                   style={{
                     gridRow: pos.row,
                     gridColumn: pos.col,
-                    background: isSelected
-                      ? color
-                      : `linear-gradient(135deg, ${color}18, ${color}35)`,
-                    borderColor: isSelected ? color : `${color}50`,
+                    backgroundColor: isSelected ? color : `${color}22`,
+                    borderColor: isSelected ? color : `${color}40`,
                     color: isSelected ? "#000" : color,
                     boxShadow: isSelected
-                      ? `0 0 12px ${color}80, 0 0 4px ${color}60, inset 0 0 8px ${color}30`
+                      ? `0 0 12px ${color}80, 0 0 4px ${color}60`
                       : "none",
                   }}
                   onMouseEnter={(e) => {
                     if (!isSelected) {
-                      e.currentTarget.style.boxShadow = `0 0 8px ${color}50, 0 0 2px ${color}40`;
+                      e.currentTarget.style.backgroundColor = `${color}38`;
+                      e.currentTarget.style.boxShadow = `0 0 6px ${color}40`;
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (!isSelected) {
+                      e.currentTarget.style.backgroundColor = `${color}22`;
                       e.currentTarget.style.boxShadow = "none";
                     }
                   }}

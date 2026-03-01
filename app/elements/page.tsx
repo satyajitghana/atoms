@@ -1,7 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import dynamic from "next/dynamic";
 import { PeriodicTable } from "@/components/periodic-table/periodic-table";
+import { PeriodicTableViews, VIEW_OPTIONS, type ViewMode } from "@/components/periodic-table/periodic-table-views";
+import { ElementDetailPanel } from "@/components/elements/element-detail-panel";
 import { ParticleControls } from "@/components/controls/particle-controls";
 import { AufbauDiagram } from "@/components/electron-config/aufbau-diagram";
 import {
@@ -15,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Loader2, X, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 const OrbitalViewer = dynamic(
   () =>
@@ -36,6 +40,8 @@ export default function ElementsPage() {
     setParticleCount,
     setPointSize,
   } = useElementsStore();
+
+  const [viewMode, setViewMode] = useState<ViewMode>("standard");
 
   const orbitals = selectedElement
     ? parseElectronConfig(selectedElement.electronConfiguration)
@@ -70,19 +76,30 @@ export default function ElementsPage() {
         <div className="min-w-0">
           <h1 className="text-base sm:text-lg font-semibold">Element Explorer</h1>
           <p className="text-[10px] sm:text-xs text-muted-foreground truncate">
-            Select an element to visualize its electron orbitals
+            {selectedElement
+              ? `${selectedElement.name} — ${selectedElement.electronConfiguration}`
+              : "Select an element to visualize its electron orbitals"}
           </p>
         </div>
-        {selectedElement && (
-          <div className="flex items-center gap-2 shrink-0 ml-2">
-            <div className="text-right">
-              <p className="text-xs sm:text-sm font-semibold">
-                {selectedElement.name} ({selectedElement.symbol})
-              </p>
-              <p className="text-[9px] sm:text-[10px] text-muted-foreground font-mono max-w-[200px] truncate">
-                {selectedElement.electronConfiguration}
-              </p>
-            </div>
+        <div className="flex items-center gap-2 shrink-0 ml-2">
+          {/* View mode selector */}
+          <div className="flex gap-0.5 bg-muted/30 rounded-md p-0.5">
+            {VIEW_OPTIONS.map(({ key, label }) => (
+              <button
+                key={key}
+                onClick={() => setViewMode(key)}
+                className={cn(
+                  "px-1.5 py-0.5 rounded text-[8px] transition-all",
+                  viewMode === key
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          {selectedElement && (
             <Button
               variant="ghost"
               size="icon"
@@ -91,28 +108,44 @@ export default function ElementsPage() {
             >
               <X className="h-3.5 w-3.5" />
             </Button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {/* Desktop: side by side | Mobile: stacked */}
       <div className="flex-1 flex flex-col lg:flex-row min-h-0">
-        {/* Periodic Table + Aufbau Diagram */}
+        {/* Periodic Table + Details */}
         <div className={`${selectedElement ? "lg:w-[52%]" : "w-full"} overflow-auto p-3 sm:p-4 pt-1 transition-all duration-300 ${selectedElement ? "max-h-[45vh] lg:max-h-full" : ""}`}>
-          <PeriodicTable
-            selectedElement={selectedElement?.number}
-            onElementSelect={handleElementSelect}
-            compact={!!selectedElement}
-          />
+          {viewMode === "standard" ? (
+            <PeriodicTable
+              selectedElement={selectedElement?.number}
+              onElementSelect={handleElementSelect}
+              compact={!!selectedElement}
+            />
+          ) : (
+            <PeriodicTableViews
+              selectedElement={selectedElement?.number}
+              onElementSelect={handleElementSelect}
+              view={viewMode}
+            />
+          )}
 
           {selectedElement && (
-            <div className="mt-4 p-3 rounded-lg border border-border/30 bg-card/30">
-              <AufbauDiagram
-                electronConfiguration={selectedElement.electronConfiguration}
-                activeOrbital={activeOrbital}
-                onOrbitalClick={handleAufbauClick}
-              />
-            </div>
+            <>
+              {/* Element Details */}
+              <div className="mt-4 p-3 rounded-lg border border-border/30 bg-card/30">
+                <ElementDetailPanel element={selectedElement} />
+              </div>
+
+              {/* Aufbau Diagram */}
+              <div className="mt-3 p-3 rounded-lg border border-border/30 bg-card/30">
+                <AufbauDiagram
+                  electronConfiguration={selectedElement.electronConfiguration}
+                  activeOrbital={activeOrbital}
+                  onOrbitalClick={handleAufbauClick}
+                />
+              </div>
+            </>
           )}
         </div>
 

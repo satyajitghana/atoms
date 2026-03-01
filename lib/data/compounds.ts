@@ -77,6 +77,52 @@ export const COMPOUNDS: Compound[] = [
   { formula: "AgCl", name: "Silver Chloride", elements: [{ symbol: "Ag", count: 1 }, { symbol: "Cl", count: 1 }], deltaHf: -127.0, bondType: "ionic", description: "Light-sensitive compound used in photography", difficulty: 3 },
   { formula: "FeS2", name: "Iron Pyrite", elements: [{ symbol: "Fe", count: 1 }, { symbol: "S", count: 2 }], deltaHf: -178.2, bondType: "ionic", description: "Fool's gold — metallic luster resembles gold", difficulty: 3 },
   { formula: "P2O5", name: "Phosphorus Pentoxide", elements: [{ symbol: "P", count: 2 }, { symbol: "O", count: 5 }], deltaHf: -1492.0, bondType: "covalent", description: "Powerful desiccant — absorbs water aggressively", difficulty: 3 },
+
+  // Additional Tier 1
+  { formula: "KBr", name: "Potassium Bromide", elements: [{ symbol: "K", count: 1 }, { symbol: "Br", count: 1 }], deltaHf: -393.8, bondType: "ionic", description: "Used in photographic film development", difficulty: 1 },
+  { formula: "NaI", name: "Sodium Iodide", elements: [{ symbol: "Na", count: 1 }, { symbol: "I", count: 1 }], deltaHf: -287.8, bondType: "ionic", description: "Used in radiation detectors", difficulty: 1 },
+  { formula: "LiBr", name: "Lithium Bromide", elements: [{ symbol: "Li", count: 1 }, { symbol: "Br", count: 1 }], deltaHf: -351.2, bondType: "ionic", description: "Used in absorption chillers for air conditioning", difficulty: 1 },
+  { formula: "KI", name: "Potassium Iodide", elements: [{ symbol: "K", count: 1 }, { symbol: "I", count: 1 }], deltaHf: -327.9, bondType: "ionic", description: "Used to protect the thyroid from radiation", difficulty: 1 },
+  { formula: "HI", name: "Hydrogen Iodide", elements: [{ symbol: "H", count: 1 }, { symbol: "I", count: 1 }], deltaHf: 26.5, bondType: "covalent", description: "Strong acid — one of the few endothermic hydrogen halides", difficulty: 1 },
+  { formula: "Br2", name: "Bromine", elements: [{ symbol: "Br", count: 2 }], deltaHf: 0, bondType: "covalent", description: "The only non-metallic liquid element at room temperature", difficulty: 1 },
+  { formula: "I2", name: "Iodine", elements: [{ symbol: "I", count: 2 }], deltaHf: 0, bondType: "covalent", description: "Purple vapor — used as a disinfectant", difficulty: 1 },
+
+  // Additional Tier 2
+  { formula: "FeO", name: "Iron(II) Oxide", elements: [{ symbol: "Fe", count: 1 }, { symbol: "O", count: 1 }], deltaHf: -272.0, bondType: "ionic", description: "Wüstite — a non-stoichiometric mineral", difficulty: 2 },
+  { formula: "Fe3O4", name: "Iron(II,III) Oxide", elements: [{ symbol: "Fe", count: 3 }, { symbol: "O", count: 4 }], deltaHf: -1118.4, bondType: "ionic", description: "Magnetite — naturally magnetic iron ore", difficulty: 2 },
+  { formula: "TiO2", name: "Titanium Dioxide", elements: [{ symbol: "Ti", count: 1 }, { symbol: "O", count: 2 }], deltaHf: -944.0, bondType: "ionic", description: "White pigment in paint, sunscreen, and food coloring", difficulty: 2 },
+  { formula: "BaCl2", name: "Barium Chloride", elements: [{ symbol: "Ba", count: 1 }, { symbol: "Cl", count: 2 }], deltaHf: -858.6, bondType: "ionic", description: "Used in fireworks for green color", difficulty: 2 },
+  { formula: "NiO", name: "Nickel(II) Oxide", elements: [{ symbol: "Ni", count: 1 }, { symbol: "O", count: 1 }], deltaHf: -239.7, bondType: "ionic", description: "Green powder used in ceramics and batteries", difficulty: 2 },
+  { formula: "CS2", name: "Carbon Disulfide", elements: [{ symbol: "C", count: 1 }, { symbol: "S", count: 2 }], deltaHf: 89.0, bondType: "covalent", description: "Flammable liquid solvent with ether-like odor", difficulty: 2 },
+  { formula: "CCl4", name: "Carbon Tetrachloride", elements: [{ symbol: "C", count: 1 }, { symbol: "Cl", count: 4 }], deltaHf: -128.2, bondType: "covalent", description: "Former dry cleaning solvent — now banned as ozone depleter", difficulty: 2 },
+  { formula: "N2O", name: "Nitrous Oxide", elements: [{ symbol: "N", count: 2 }, { symbol: "O", count: 1 }], deltaHf: 82.1, bondType: "covalent", description: "Laughing gas — used in anesthesia and whipped cream", difficulty: 2 },
+  { formula: "COCl2", name: "Phosgene", elements: [{ symbol: "C", count: 1 }, { symbol: "O", count: 1 }, { symbol: "Cl", count: 2 }], deltaHf: -218.8, bondType: "covalent", description: "Toxic gas once used as a chemical weapon — now used in plastics", difficulty: 2 },
+  { formula: "SF6", name: "Sulfur Hexafluoride", elements: [{ symbol: "S", count: 1 }, { symbol: "F", count: 6 }], deltaHf: -1209.0, bondType: "covalent", description: "Dense inert gas — makes your voice deep (opposite of helium)", difficulty: 2 },
+  { formula: "BF3", name: "Boron Trifluoride", elements: [{ symbol: "B", count: 1 }, { symbol: "F", count: 3 }], deltaHf: -1137.0, bondType: "covalent", description: "Strong Lewis acid catalyst used in chemical synthesis", difficulty: 2 },
+  { formula: "CuCl2", name: "Copper(II) Chloride", elements: [{ symbol: "Cu", count: 1 }, { symbol: "Cl", count: 2 }], deltaHf: -220.1, bondType: "ionic", description: "Blue-green compound — makes flames green in fireworks", difficulty: 2 },
+  { formula: "ZnCl2", name: "Zinc Chloride", elements: [{ symbol: "Zn", count: 1 }, { symbol: "Cl", count: 2 }], deltaHf: -415.1, bondType: "ionic", description: "Used as flux for soldering and in batteries", difficulty: 2 },
+  { formula: "PH3", name: "Phosphine", elements: [{ symbol: "P", count: 1 }, { symbol: "H", count: 3 }], deltaHf: 5.4, bondType: "covalent", description: "Toxic gas — detected in Venus's atmosphere", difficulty: 2 },
+  { formula: "AsH3", name: "Arsine", elements: [{ symbol: "As", count: 1 }, { symbol: "H", count: 3 }], deltaHf: 66.4, bondType: "covalent", description: "Extremely toxic gas used in semiconductor manufacturing", difficulty: 2 },
+
+  // Additional Tier 3
+  { formula: "KOH", name: "Potassium Hydroxide", elements: [{ symbol: "K", count: 1 }, { symbol: "O", count: 1 }, { symbol: "H", count: 1 }], deltaHf: -424.6, bondType: "ionic", description: "Caustic potash — used in soap and biodiesel production", difficulty: 3 },
+  { formula: "CaSO4", name: "Calcium Sulfate", elements: [{ symbol: "Ca", count: 1 }, { symbol: "S", count: 1 }, { symbol: "O", count: 4 }], deltaHf: -1434.1, bondType: "ionic", description: "Gypsum — used in plaster and drywall", difficulty: 3 },
+  { formula: "KNO3", name: "Potassium Nitrate", elements: [{ symbol: "K", count: 1 }, { symbol: "N", count: 1 }, { symbol: "O", count: 3 }], deltaHf: -494.6, bondType: "ionic", description: "Saltpeter — key ingredient in gunpowder and fertilizer", difficulty: 3 },
+  { formula: "Na2SO4", name: "Sodium Sulfate", elements: [{ symbol: "Na", count: 2 }, { symbol: "S", count: 1 }, { symbol: "O", count: 4 }], deltaHf: -1387.1, bondType: "ionic", description: "Glauber's salt — used in detergent manufacturing", difficulty: 3 },
+  { formula: "NH4NO3", name: "Ammonium Nitrate", elements: [{ symbol: "N", count: 2 }, { symbol: "H", count: 4 }, { symbol: "O", count: 3 }], deltaHf: -365.6, bondType: "ionic", description: "Fertilizer that can also be an explosive", difficulty: 3 },
+  { formula: "NaNO3", name: "Sodium Nitrate", elements: [{ symbol: "Na", count: 1 }, { symbol: "N", count: 1 }, { symbol: "O", count: 3 }], deltaHf: -467.9, bondType: "ionic", description: "Chile saltpeter — used in fertilizers and food preservation", difficulty: 3 },
+  { formula: "CuSO4", name: "Copper(II) Sulfate", elements: [{ symbol: "Cu", count: 1 }, { symbol: "S", count: 1 }, { symbol: "O", count: 4 }], deltaHf: -771.4, bondType: "ionic", description: "Bright blue crystals — used in swimming pool treatment", difficulty: 3 },
+  { formula: "ZnS", name: "Zinc Sulfide", elements: [{ symbol: "Zn", count: 1 }, { symbol: "S", count: 1 }], deltaHf: -205.6, bondType: "ionic", description: "Phosphorescent — used in glow-in-the-dark paints", difficulty: 3 },
+  { formula: "SnO2", name: "Tin Dioxide", elements: [{ symbol: "Sn", count: 1 }, { symbol: "O", count: 2 }], deltaHf: -577.6, bondType: "ionic", description: "Cassiterite — the primary ore of tin", difficulty: 3 },
+  { formula: "PbO", name: "Lead(II) Oxide", elements: [{ symbol: "Pb", count: 1 }, { symbol: "O", count: 1 }], deltaHf: -218.0, bondType: "ionic", description: "Litharge — yellow powder used in lead-acid batteries", difficulty: 3 },
+  { formula: "CoO", name: "Cobalt(II) Oxide", elements: [{ symbol: "Co", count: 1 }, { symbol: "O", count: 1 }], deltaHf: -237.9, bondType: "ionic", description: "Olive-green powder used to make blue glass and pottery", difficulty: 3 },
+  { formula: "B2O3", name: "Boron Trioxide", elements: [{ symbol: "B", count: 2 }, { symbol: "O", count: 3 }], deltaHf: -1273.5, bondType: "covalent", description: "Glassy material used in borosilicate glass (Pyrex)", difficulty: 3 },
+  { formula: "K2CO3", name: "Potassium Carbonate", elements: [{ symbol: "K", count: 2 }, { symbol: "C", count: 1 }, { symbol: "O", count: 3 }], deltaHf: -1151.0, bondType: "ionic", description: "Potash — historically used to make soap and glass", difficulty: 3 },
+  { formula: "MgSO4", name: "Magnesium Sulfate", elements: [{ symbol: "Mg", count: 1 }, { symbol: "S", count: 1 }, { symbol: "O", count: 4 }], deltaHf: -1284.9, bondType: "ionic", description: "Epsom salt — used in bath salts and agriculture", difficulty: 3 },
+  { formula: "FeSO4", name: "Iron(II) Sulfate", elements: [{ symbol: "Fe", count: 1 }, { symbol: "S", count: 1 }, { symbol: "O", count: 4 }], deltaHf: -928.4, bondType: "ionic", description: "Green vitriol — used in iron supplements and water treatment", difficulty: 3 },
+  { formula: "BaSO4", name: "Barium Sulfate", elements: [{ symbol: "Ba", count: 1 }, { symbol: "S", count: 1 }, { symbol: "O", count: 4 }], deltaHf: -1473.2, bondType: "ionic", description: "Used as contrast agent in medical X-ray imaging", difficulty: 3 },
+  { formula: "NiCl2", name: "Nickel(II) Chloride", elements: [{ symbol: "Ni", count: 1 }, { symbol: "Cl", count: 2 }], deltaHf: -305.3, bondType: "ionic", description: "Yellow-green salt used in nickel electroplating", difficulty: 3 },
+  { formula: "SiC", name: "Silicon Carbide", elements: [{ symbol: "Si", count: 1 }, { symbol: "C", count: 1 }], deltaHf: -65.3, bondType: "covalent", description: "Moissanite — nearly as hard as diamond, used in abrasives", difficulty: 3 },
 ];
 
 /**

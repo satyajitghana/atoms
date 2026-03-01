@@ -47,8 +47,9 @@ export function OrbitalPoints({
           void main() {
             vColor = particleColor;
             vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-            gl_PointSize = pointSize * (200.0 / -mvPosition.z);
-            gl_PointSize = max(gl_PointSize, 1.0);
+            gl_PointSize = pointSize * (3000.0 / -mvPosition.z);
+            gl_PointSize = max(gl_PointSize, 0.5);
+            gl_PointSize = min(gl_PointSize, 64.0);
             gl_Position = projectionMatrix * mvPosition;
           }
         `,
@@ -67,7 +68,7 @@ export function OrbitalPoints({
           pointSize: { value: pointSize },
         },
         transparent: true,
-        depthWrite: false,
+        depthWrite: true,
         blending: THREE.AdditiveBlending,
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps

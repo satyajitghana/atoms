@@ -21,13 +21,13 @@ void mainImage(const in vec4 inputColor, const in vec2 uv, const in float depth,
     return;
   }
 
-  float logCenter = log2(centerDepth);
+  float logCenter = log2(max(centerDepth, 0.001));
 
   float sum = 0.0;
-  sum += max(0.0, logCenter - log2(readDepth(uv + vec2(-pixelSize.x, 0.0))));
-  sum += max(0.0, logCenter - log2(readDepth(uv + vec2( pixelSize.x, 0.0))));
-  sum += max(0.0, logCenter - log2(readDepth(uv + vec2(0.0, -pixelSize.y))));
-  sum += max(0.0, logCenter - log2(readDepth(uv + vec2(0.0,  pixelSize.y))));
+  sum += max(0.0, logCenter - log2(max(readDepth(uv + vec2(-pixelSize.x, 0.0)), 0.001)));
+  sum += max(0.0, logCenter - log2(max(readDepth(uv + vec2( pixelSize.x, 0.0)), 0.001)));
+  sum += max(0.0, logCenter - log2(max(readDepth(uv + vec2(0.0, -pixelSize.y)), 0.001)));
+  sum += max(0.0, logCenter - log2(max(readDepth(uv + vec2(0.0,  pixelSize.y)), 0.001)));
 
   float shade = exp(-sum * 300.0 * edlStrength);
   outputColor = vec4(inputColor.rgb * shade, inputColor.a);

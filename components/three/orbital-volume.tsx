@@ -97,6 +97,7 @@ export function OrbitalVolume({
 
   const { densityTex, colorTex } = useMemo(() => {
     const res = volumeData.resolution;
+    const totalVoxels = res * res * res;
 
     const dTex = new THREE.Data3DTexture(
       new Float32Array(volumeData.density),
@@ -111,11 +112,18 @@ export function OrbitalVolume({
     dTex.wrapR = THREE.ClampToEdgeWrapping;
     dTex.needsUpdate = true;
 
-    const cTex = new THREE.Data3DTexture(
-      new Float32Array(volumeData.colors),
-      res, res, res
-    );
-    cTex.format = THREE.RGBFormat;
+    // Convert RGB to RGBA (WebGL2 doesn't support RGB32F for 3D textures)
+    const rgbData = volumeData.colors;
+    const rgbaData = new Float32Array(totalVoxels * 4);
+    for (let i = 0; i < totalVoxels; i++) {
+      rgbaData[i * 4] = rgbData[i * 3];
+      rgbaData[i * 4 + 1] = rgbData[i * 3 + 1];
+      rgbaData[i * 4 + 2] = rgbData[i * 3 + 2];
+      rgbaData[i * 4 + 3] = 1.0;
+    }
+
+    const cTex = new THREE.Data3DTexture(rgbaData, res, res, res);
+    cTex.format = THREE.RGBAFormat;
     cTex.type = THREE.FloatType;
     cTex.minFilter = THREE.LinearFilter;
     cTex.magFilter = THREE.LinearFilter;
@@ -134,7 +142,7 @@ export function OrbitalVolume({
       uniforms: {
         densityTex: { value: densityTex },
         colorTex: { value: colorTex },
-        camPos: { value: camera.position.clone() },
+        camPos: { value: new THREE.Vector3() },
         opacity: { value: opacity },
         modelMatInv: { value: new THREE.Matrix4() },
       },
@@ -142,7 +150,8 @@ export function OrbitalVolume({
       side: THREE.BackSide,
       depthWrite: false,
     });
-  }, [densityTex, colorTex, camera.position, opacity]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [densityTex, colorTex]);
 
   useEffect(() => {
     material.uniforms.opacity.value = opacity;
