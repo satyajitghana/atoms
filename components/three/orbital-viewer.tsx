@@ -20,6 +20,8 @@ interface OrbitalViewerProps {
   volumeData?: VolumeData | null;
   volumeOpacity?: number;
   edlEnabled?: boolean;
+  interactive?: boolean;
+  dpr?: [number, number];
 }
 
 function CameraFitter({ positions }: { positions: Float32Array }) {
@@ -70,11 +72,13 @@ export function OrbitalViewer({
   volumeData = null,
   volumeOpacity = 5.0,
   edlEnabled = false,
+  interactive = true,
+  dpr,
 }: OrbitalViewerProps) {
   return (
-    <OrbitalScene className="w-full h-full">
+    <OrbitalScene className="w-full h-full" dpr={dpr}>
       <ambientLight intensity={0.1} />
-      <SceneControls />
+      {interactive && <SceneControls />}
       <CameraFitter positions={positions} />
       {renderMode === "points" ? (
         <OrbitalPoints
