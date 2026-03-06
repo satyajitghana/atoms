@@ -6,9 +6,10 @@ import { Suspense, type ReactNode } from "react";
 interface OrbitalSceneProps {
   children: ReactNode;
   className?: string;
+  dpr?: [number, number];
 }
 
-export function OrbitalScene({ children, className }: OrbitalSceneProps) {
+export function OrbitalScene({ children, className, dpr = [1, 2] }: OrbitalSceneProps) {
   return (
     <div className={className} style={{ position: "relative" }}>
       <Canvas
@@ -18,7 +19,7 @@ export function OrbitalScene({ children, className }: OrbitalSceneProps) {
           alpha: false,
           powerPreference: "high-performance",
         }}
-        dpr={[1, 2]}
+        dpr={dpr}
         style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
       >
         <color attach="background" args={["#050508"]} />
