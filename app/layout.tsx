@@ -5,7 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Header } from "@/components/layout/header";
 import "./globals.css";
 
-const siteUrl = "https://atoms.thesatyajit.com";
+const siteUrl = "https://atoms.satyajit.si";
 
 export const viewport: Viewport = {
   themeColor: "#050510",
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     "wave function",
     "react-three-fiber",
   ],
-  authors: [{ name: "Satyajit Ghana", url: "https://thesatyajit.com" }],
+  authors: [{ name: "Satyajit Ghana", url: "https://satyajit.si" }],
   creator: "Satyajit Ghana",
   metadataBase: new URL(siteUrl),
   icons: {

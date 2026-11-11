@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <a href="https://atoms.thesatyajit.com"><img src="https://img.shields.io/badge/demo-atoms.thesatyajit.com-00d4ff?style=flat-square" alt="Live Demo" /></a>
+  <a href="https://atoms.satyajit.si"><img src="https://img.shields.io/badge/demo-atoms.satyajit.si-00d4ff?style=flat-square" alt="Live Demo" /></a>
   <img src="https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=next.js" alt="Next.js 16" />
   <img src="https://img.shields.io/badge/React-19-61dafb?style=flat-square&logo=react" alt="React 19" />
   <img src="https://img.shields.io/badge/Three.js-WebGL-black?style=flat-square&logo=three.js" alt="Three.js" />
